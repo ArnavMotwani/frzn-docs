@@ -1,0 +1,42 @@
+# macOS
+.DS_Store
+
+# Node (frontend)
+frontend/node_modules/
+frontend/.next/
+
+# Build outputs (if you ever add them)
+dist/
+build/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+backend/venv/
+backend/.venv/
+
+# Poetry PEP 582 (if you ever use it)
+__pypackages__/
+
+# Test & coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# IDEs & editors
+.vscode/
+.idea/
+
+# Docker
+db-data/
+*.log
+
+# Env files
+.env
+.env.*
+
+# Package lock files
+frontend/package-lock.json
