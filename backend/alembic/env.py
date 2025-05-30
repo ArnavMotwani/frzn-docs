@@ -4,6 +4,7 @@ import os
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 from alembic import context
+from app.models import SQLModel
 
 # --- Load .env and set DB URL from env var, if present ---
 try:
@@ -26,7 +27,7 @@ if config.config_file_name is not None:
 # Add your model's MetaData object here for 'autogenerate' support
 # Example: from app.db import SQLModel
 # target_metadata = SQLModel.metadata
-target_metadata = None
+target_metadata = SQLModel.metadata
 
 def run_migrations_offline() -> None:
     """Run migrations in 'offline' mode."""

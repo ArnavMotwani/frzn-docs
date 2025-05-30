@@ -1,7 +1,6 @@
-version: '3.8'
 services:
   db:
-    image: postgres:15
+    image: pgvector/pgvector:0.7.4-pg15
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
