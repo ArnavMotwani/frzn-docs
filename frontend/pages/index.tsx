@@ -1,27 +1,74 @@
 // frontend/pages/index.tsx
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { NextPage } from 'next';
 
 import RepoSlashInput from '@/components/RepoSlashInput';
 import RepoSlashCard from '@/components/RepoSlashCard';
 
+interface Repo {
+    id: number;
+    owner: string;
+    name: string;
+    full_name: string;
+    description?: string;
+    default_branch: string;
+    html_url?: string;
+    clone_url?: string;
+    indexed_at: string;
+}
+
 const Home: NextPage = () => {
     const [owner, setOwner] = useState('');
     const [name, setName] = useState('');
-
-    const repos = [
-        { owner: 'facebook', name: 'react' },
-        { owner: 'vercel', name: 'next.js' },
-        { owner: 'tailwindlabs', name: 'tailwindcss' },
-        { owner: 'nodejs', name: 'node' },
-        { owner: 'python', name: 'cpython' },
-        { owner: 'microsoft', name: 'typescript' },
-    ];
+    const [repos, setRepos] = useState<Repo[]>([]);
 
     const handleIndexRepo = () => {
-        // TODO: replace with your actual indexing logic
-        console.log('Indexing repo:', { owner, name });
+        const trimmedOwner = owner.trim();
+        const trimmedName = name.trim();
+
+        const createRepo = async () => {
+            try {
+                const response = await fetch('/api/repos', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ owner: trimmedOwner, name: trimmedName }),
+                });
+
+                if (!response.ok) {
+                    const text = await response.text();
+                    throw new Error(text || 'Failed to index repo');
+                }
+
+                const data: Repo = await response.json();
+                setRepos((prev) => [...prev, data]);
+                setOwner('');
+                setName('');
+            } catch (error) {
+                console.error('Error indexing repo:', error);
+            }
+        }
+        if (trimmedOwner && trimmedName) {
+            createRepo();
+        } else {
+            alert('Please enter both owner and repo name');
+        }
     };
+
+    useEffect(() => {
+        const getRepos = async () => {
+            try {
+                const response = await fetch('/api/repos');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch repos');
+                }
+                const data: Repo[] = await response.json();
+                setRepos(data);
+            } catch (error) {
+                console.error('Error fetching repos:', error);
+            }
+        };
+        getRepos();
+    }, []);
 
     return (
         <div className="flex flex-col items-center min-h-screen p-8">
@@ -31,7 +78,7 @@ const Home: NextPage = () => {
             </p>
 
             <p className="mt-8 text-sm text-gray-500">
-                Enter your repo below
+                Enter your GitHub repo below
             </p>
 
             <div className="mt-4 w-full max-w-2xl">
@@ -53,7 +100,7 @@ const Home: NextPage = () => {
 
                 <button
                     onClick={handleIndexRepo}
-                    className="mt-4 px-6 py-2 block mx-auto rounded-lg border-3 border-black font-bold text-gray-700 hover:bg-gray-100"
+                    className="mt-4 px-6 py-2 block mx-auto rounded-lg border-3 border-black font-bold text-gray-700 hover:bg-gray-100 cursor-pointer"
                 >
                     Index repo
                 </button>
