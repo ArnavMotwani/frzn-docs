@@ -1,5 +1,7 @@
 FROM python:3.11-alpine
 
+RUN apk add --no-cache libpq openssl git
+
 WORKDIR /app
 
 # Install system dependencies for psycopg2

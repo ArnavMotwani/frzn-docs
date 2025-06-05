@@ -15,6 +15,7 @@ class ReadRepo(CreateRepo):
     html_url: str | None = None
     clone_url: str | None = None
     indexed_at: datetime
-
+    index_status: str
+    
     class Config:
         orm_mode = True

@@ -1,11 +1,18 @@
 # backend/app/models.py
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional, List
 
 from sqlmodel import SQLModel, Field, Column
 from sqlalchemy import String
 from pgvector.sqlalchemy import Vector
+from enum import Enum
+
+class IndexStatus(str, Enum):
+    pending = "pending"
+    indexing = "indexing"
+    complete = "complete"
+    error = "error"
 
 
 class Repo(SQLModel, table=True):
@@ -19,7 +26,8 @@ class Repo(SQLModel, table=True):
     default_branch: str
     html_url: Optional[str] = None
     clone_url: Optional[str] = None
-    indexed_at: datetime = Field(default_factory=datetime.utcnow)
+    indexed_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    index_status: IndexStatus = Field(default=IndexStatus.pending)
 
 
 class File(SQLModel, table=True):
@@ -27,7 +35,7 @@ class File(SQLModel, table=True):
     repo_id: int = Field(foreign_key="repo.id")
     path: str
     size: Optional[int] = None
-    indexed_at: datetime = Field(default_factory=datetime.utcnow)
+    indexed_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
 class CodeChunk(SQLModel, table=True):
