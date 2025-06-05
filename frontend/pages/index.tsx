@@ -54,6 +54,39 @@ const Home: NextPage = () => {
         }
     };
 
+    const handleDeleteRepo = async (repoId: number) => {
+        try {
+            const response = await fetch(`/api/repos/${repoId}`, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+            });
+            if (!response.ok) {
+                const text = await response.text();
+                throw new Error(text || 'Failed to delete repo');
+            }
+            setRepos((prev) => prev.filter(repo => repo.id !== repoId));
+        } catch (error) {
+            console.error('Error deleting repo:', error);
+        }
+    }
+
+    const handleRepoClick = async (repoId: number) => {
+        try {
+            const response = await fetch(`/api/repos/${repoId}`, {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' },
+            });
+            if (!response.ok) {
+                const text = await response.text();
+                throw new Error(text || 'Failed to fetch repo details');
+            }
+            const data: Repo = await response.json();
+            console.log('Repo details:', data);
+        } catch (error) {
+            console.error('Error fetching repo details:', error);
+        }
+    };
+
     useEffect(() => {
         const getRepos = async () => {
             try {
@@ -121,6 +154,8 @@ const Home: NextPage = () => {
                         backgroundColor="#FFFFFF"
                         showBackground={true}
                         className="cursor-pointer"
+                        onClick={() => handleRepoClick(repo.id)}
+                        onTrashClick={() => handleDeleteRepo(repo.id)}
                     />
                 ))}
             </div>

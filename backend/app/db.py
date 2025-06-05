@@ -2,7 +2,7 @@ from sqlmodel import create_engine, Session
 from app.core.config import settings
 
 # Create the SQLModel/SQLAlchemy engine
-engine = create_engine(settings.DATABASE_URL, echo=False)
+engine = create_engine(settings.DATABASE_URL, echo=True)
 
 # Dependency for FastAPI endpoints to get a session
 def get_session():
