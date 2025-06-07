@@ -1,6 +1,7 @@
 // frontend/pages/index.tsx
 import React, { useEffect, useState } from 'react';
 import { NextPage } from 'next';
+import toast, { Toaster } from 'react-hot-toast';
 
 import RepoSlashInput from '@/components/RepoSlashInput';
 import RepoSlashCard from '@/components/RepoSlashCard';
@@ -10,11 +11,12 @@ interface Repo {
     owner: string;
     name: string;
     full_name: string;
-    description?: string;
+    description: string | null;
     default_branch: string;
-    html_url?: string;
-    clone_url?: string;
+    html_url: string | null;
+    clone_url: string | null;
     indexed_at: string;
+    index_status: "pending" | "indexing" | "complete" | "error";
 }
 
 const Home: NextPage = () => {
@@ -49,8 +51,11 @@ const Home: NextPage = () => {
         }
         if (trimmedOwner && trimmedName) {
             createRepo();
+            toast(`Cloning and indexing ${trimmedOwner} / ${trimmedName}`, {
+                duration: 4000,
+            });
         } else {
-            alert('Please enter both owner and repo name');
+            toast.error('Owner and repo cannot be empty');
         }
     };
 
@@ -65,6 +70,7 @@ const Home: NextPage = () => {
                 throw new Error(text || 'Failed to delete repo');
             }
             setRepos((prev) => prev.filter(repo => repo.id !== repoId));
+            toast.success('Repo deleted successfully');
         } catch (error) {
             console.error('Error deleting repo:', error);
         }
@@ -81,7 +87,9 @@ const Home: NextPage = () => {
                 throw new Error(text || 'Failed to fetch repo details');
             }
             const data: Repo = await response.json();
-            console.log('Repo details:', data);
+            toast(`Repo ${data.owner} / ${data.name} details fetched successfully, with index status: ${data.index_status}`, {
+                duration: 4000,
+            });
         } catch (error) {
             console.error('Error fetching repo details:', error);
         }
@@ -104,62 +112,78 @@ const Home: NextPage = () => {
     }, []);
 
     return (
-        <div className="flex flex-col items-center min-h-screen p-8">
-            <h1 className="text-6xl font-bold">frzn-docs</h1>
-            <p className="mt-4 text-lg text-gray-500">
-                Create documentation AI agent for your codebase
-            </p>
+        <>
+            <Toaster
+                position="top-right"
+                reverseOrder={false}
+                toastOptions={{
+                    className: 'font-bold',
+                    style: {
+                        background: '#333',
+                        color: '#F9FAFB',
+                        fontSize: '1rem',
+                        padding: '16px',
+                        borderRadius: '20px',
+                    },
+                }}
+            />
+            <div className="flex flex-col items-center min-h-screen p-8">
+                <h1 className="text-6xl font-bold">frzn-docs</h1>
+                <p className="mt-4 text-lg text-gray-500">
+                    Create documentation AI agent for your codebase
+                </p>
 
-            <p className="mt-8 text-sm text-gray-500">
-                Enter your GitHub repo below
-            </p>
+                <p className="mt-8 text-sm text-gray-500">
+                    Enter your GitHub repo below
+                </p>
 
-            <div className="mt-4 w-full max-w-2xl">
-                <RepoSlashInput
-                    repoOwner={owner}
-                    repoName={name}
-                    gradientFrom="#3B82F6"
-                    gradientTo="#9333EA"
-                    backgroundColor="#FFFFFF"
-                    placeholderOwner="owner"
-                    placeholderName="repo"
-                    onOwnerChange={setOwner}
-                    onNameChange={setName}
-                    className="w-full"
-                    height="72px"
-                    fontSize="1.75rem"
-                    fontWeight={700}
-                />
-
-                <button
-                    onClick={handleIndexRepo}
-                    className="mt-4 px-6 py-2 block mx-auto rounded-lg border-3 border-black font-bold text-gray-700 hover:bg-gray-100 cursor-pointer"
-                >
-                    Index repo
-                </button>
-            </div>
-
-            <p className="mt-12 text-sm text-gray-500">
-                or choose a previously indexed project
-            </p>
-
-            <div className="mt-4 w-full max-w-4xl grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                {repos.map((repo, idx) => (
-                    <RepoSlashCard
-                        key={idx}
-                        repoOwner={repo.owner}
-                        repoName={repo.name}
+                <div className="mt-4 w-full max-w-2xl">
+                    <RepoSlashInput
+                        repoOwner={owner}
+                        repoName={name}
                         gradientFrom="#3B82F6"
                         gradientTo="#9333EA"
                         backgroundColor="#FFFFFF"
-                        showBackground={true}
-                        className="cursor-pointer"
-                        onClick={() => handleRepoClick(repo.id)}
-                        onTrashClick={() => handleDeleteRepo(repo.id)}
+                        placeholderOwner="owner"
+                        placeholderName="repo"
+                        onOwnerChange={setOwner}
+                        onNameChange={setName}
+                        className="w-full"
+                        height="72px"
+                        fontSize="1.75rem"
+                        fontWeight={700}
                     />
-                ))}
+
+                    <button
+                        onClick={handleIndexRepo}
+                        className="mt-4 px-6 py-2 block mx-auto rounded-lg border-3 border-black font-bold text-gray-700 hover:bg-gray-100 cursor-pointer"
+                    >
+                        Index repo
+                    </button>
+                </div>
+
+                <p className="mt-12 text-sm text-gray-500">
+                    or choose a previously indexed project
+                </p>
+
+                <div className="mt-4 w-full max-w-4xl grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                    {repos.map((repo) => (
+                        <RepoSlashCard
+                            key={repo.id}
+                            repoOwner={repo.owner}
+                            repoName={repo.name}
+                            gradientFrom={repo.index_status === "error" ? "#F87171" : "#3B82F6"}
+                            gradientTo={repo.index_status === "error"   ? "#B91C1C" : "#9333EA"}
+                            backgroundColor="#FFFFFF"
+                            showBackground
+                            className="cursor-pointer"
+                            onClick={() => handleRepoClick(repo.id)}
+                            onTrashClick={() => handleDeleteRepo(repo.id)}
+                        />
+                    ))}
+                </div>
             </div>
-        </div>
+        </>
     );
 };
 

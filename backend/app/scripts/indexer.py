@@ -45,7 +45,6 @@ def index_repo(repo_id: int):
                     )
                     session.add(file_model)
                 session.commit()
-                session.refresh(repo)
             finally:
                 session.close()
 
