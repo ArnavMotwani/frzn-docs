@@ -35,7 +35,7 @@ def create_repo(repo: CreateRepo, background_tasks: BackgroundTasks, session: Se
     session.commit()
     session.refresh(new_repo)
 
-    background_tasks.add_task(index_repo, new_repo)
+    background_tasks.add_task(index_repo, new_repo.id)
     
     return new_repo
 
