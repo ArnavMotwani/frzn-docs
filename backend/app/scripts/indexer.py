@@ -9,6 +9,7 @@ from sqlmodel import Session
 
 from app.models import Repo as RepoModel, IndexStatus, File as FileModel
 from app.db import engine
+from app.utils.index_rules import should_index
 
 def index_repo(repo_id: int):
     session = Session(engine)
@@ -38,12 +39,13 @@ def index_repo(repo_id: int):
             session = Session(engine)
             try:
                 for file_path in file_list:
-                    file_model = FileModel(
-                        repo_id=repo.id,
-                        path=file_path,
-                        indexed_at=datetime.now(timezone.utc)
-                    )
-                    session.add(file_model)
+                    if should_index(file_path):
+                        file_model = FileModel(
+                            repo_id=repo.id,
+                            path=file_path,
+                            indexed_at=datetime.now(timezone.utc)
+                        )
+                        session.add(file_model)
                 session.commit()
             finally:
                 session.close()
