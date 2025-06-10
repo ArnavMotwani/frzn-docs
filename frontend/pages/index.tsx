@@ -174,7 +174,7 @@ const Home: NextPage = () => {
                             repoName={repo.name}
                             gradientFrom={repo.index_status === "error" ? "#F87171" : "#3B82F6"}
                             gradientTo={repo.index_status === "error"   ? "#B91C1C" : "#9333EA"}
-                            backgroundColor="#FFFFFF"
+                            backgroundColor={repo.index_status === "error" ? "rgb(255, 236, 236)" : "rgb(219, 232, 251)"}
                             showBackground
                             className="cursor-pointer"
                             onClick={() => handleRepoClick(repo.id)}

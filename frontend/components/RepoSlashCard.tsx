@@ -44,6 +44,7 @@ const RepoSlashCard: React.FC<RepoSlashCardProps> = ({
         padding: `${borderPx}px`,
         borderRadius: baseRadius,
         width: width,
+        overflow: 'hidden',
         ...(height !== 'auto' ? { height: height } : {}),
     };
 
