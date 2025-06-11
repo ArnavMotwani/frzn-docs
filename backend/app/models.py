@@ -74,7 +74,7 @@ class CodeChunk(SQLModel, table=True):
     start_line: Optional[int] = None
     end_line: Optional[int] = None
     content: str
-    embedding: List[float] = Field(sa_column=Column(Vector(768)))
+    embedding: List[float] = Field(sa_column=Column(Vector(1536)))
 
     file: "File" = Relationship(
         back_populates="chunks",
