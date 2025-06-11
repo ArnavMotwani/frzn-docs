@@ -1,12 +1,13 @@
 // frontend/pages/index.tsx
 import React, { useEffect, useState } from 'react';
 import { NextPage } from 'next';
+import { useRouter } from 'next/router';
 import toast, { Toaster } from 'react-hot-toast';
 
 import RepoSlashInput from '@/components/RepoSlashInput';
 import RepoSlashCard from '@/components/RepoSlashCard';
 
-interface Repo {
+export interface Repo {
     id: number;
     owner: string;
     name: string;
@@ -20,6 +21,8 @@ interface Repo {
 }
 
 const Home: NextPage = () => {
+    const router = useRouter();
+
     const [owner, setOwner] = useState('');
     const [name, setName] = useState('');
     const [repos, setRepos] = useState<Repo[]>([]);
@@ -77,22 +80,7 @@ const Home: NextPage = () => {
     }
 
     const handleRepoClick = async (repoId: number) => {
-        try {
-            const response = await fetch(`/api/repos/${repoId}`, {
-                method: 'GET',
-                headers: { 'Content-Type': 'application/json' },
-            });
-            if (!response.ok) {
-                const text = await response.text();
-                throw new Error(text || 'Failed to fetch repo details');
-            }
-            const data: Repo = await response.json();
-            toast(`Repo ${data.owner} / ${data.name} details fetched successfully, with index status: ${data.index_status}`, {
-                duration: 4000,
-            });
-        } catch (error) {
-            console.error('Error fetching repo details:', error);
-        }
+        router.push(`/repos/${repoId}/chat`);
     };
 
     useEffect(() => {
