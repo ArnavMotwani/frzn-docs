@@ -4,7 +4,11 @@ import React, { useEffect, useRef, useState } from 'react';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import toast, { Toaster } from 'react-hot-toast';
-
+import { X } from 'lucide-react';
+// import { AssistantRuntimeProvider } from '@assistant-ui/react';
+// import { useChatRuntime } from '@assistant-ui/react-ai-sdk';
+// import { Thread } from '@/components/assistant-ui/thread';
+// import { ThreadList } from '@/components/assistant-ui/thread-list';
 import { Repo } from '@/pages/index';
 
 const ChatPage: NextPage = () => {
@@ -13,6 +17,10 @@ const ChatPage: NextPage = () => {
     const { id } = router.query;
     const hasFetched = useRef(false);
     const [repo, setRepo] = useState<Repo | null>(null);
+
+    // const runtime = useChatRuntime({
+    //     api: `/api/chat`,
+    // });
 
     useEffect(() => {
         if (!isReady) return;
@@ -33,6 +41,7 @@ const ChatPage: NextPage = () => {
                     const text = await res.text();
                     throw new Error(text || 'Failed to fetch repo details');
                 }
+
                 const data: Repo = await res.json();
 
                 if (data.index_status === 'complete') {
@@ -71,26 +80,35 @@ const ChatPage: NextPage = () => {
                     },
                 }}
             />
-            <div className="flex flex-col items-center justify-center h-screen">
-                <h1 className="text-2xl font-bold mb-4">Chat Page</h1>
-                {repo ? (
-                    <div className="text-center">
-                        <p className="mb-2">Repo: {repo.owner}/{repo.name}</p>
-                        <p className="mb-2">Index Status: {repo.index_status}</p>
-                        <p className="mb-4">Description: {repo.description || 'No description available'}</p>
-                    </div>
-                ) : (
-                    <p className="text-gray-500">Loading repo details...</p>
-                )}
-                <p className="mt-4 text-sm text-gray-500">
-                    This page is under construction. Please check back later.
-                </p>
+
+            <div className="relative flex flex-col items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
                 <button
-                    className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                    aria-label="Close chat"
                     onClick={() => router.push('/')}
+                    className="absolute top-6 right-6 p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"
                 >
-                    Go Back to Home
+                    <X className="w-6 h-6 text-gray-600 dark:text-gray-300" />
                 </button>
+
+                {repo && (
+                    <h1 className="text-2xl font-bold mb-6 text-gray-800 dark:text-gray-100">
+                        {repo.owner}/{repo.name}
+                    </h1>
+                )}
+
+                <div className="w-full max-w-5xl bg-white dark:bg-gray-800 rounded-2xl shadow-md overflow-hidden flex h-[80vh]">
+                    {/* <AssistantRuntimeProvider runtime={runtime}>
+                        <div className="grid grid-cols-[250px_1fr] gap-4 p-6 flex-1 h-full">
+                            <ThreadList />
+                            <Thread />
+                        </div>
+                    </AssistantRuntimeProvider> */}
+                    <div className="flex-1 flex items-center justify-center">
+                        <p className="text-gray-500 dark:text-gray-400">
+                            Chat functionality is under development. Stay tuned!
+                        </p>
+                    </div>
+                </div>
             </div>
         </>
     );
