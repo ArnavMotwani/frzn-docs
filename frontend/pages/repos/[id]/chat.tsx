@@ -5,10 +5,10 @@ import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import toast, { Toaster } from 'react-hot-toast';
 import { X } from 'lucide-react';
-// import { AssistantRuntimeProvider } from '@assistant-ui/react';
-// import { useChatRuntime } from '@assistant-ui/react-ai-sdk';
-// import { Thread } from '@/components/assistant-ui/thread';
-// import { ThreadList } from '@/components/assistant-ui/thread-list';
+import { AssistantRuntimeProvider } from '@assistant-ui/react';
+import { useChatRuntime } from '@assistant-ui/react-ai-sdk';
+import { Thread } from '@/components/assistant-ui/thread';
+import { ThreadList } from '@/components/assistant-ui/thread-list';
 import { Repo } from '@/pages/index';
 
 const ChatPage: NextPage = () => {
@@ -18,9 +18,9 @@ const ChatPage: NextPage = () => {
     const hasFetched = useRef(false);
     const [repo, setRepo] = useState<Repo | null>(null);
 
-    // const runtime = useChatRuntime({
-    //     api: `/api/chat`,
-    // });
+    const runtime = useChatRuntime({
+        api: "/api/chat",
+    });
 
     useEffect(() => {
         if (!isReady) return;
@@ -96,18 +96,13 @@ const ChatPage: NextPage = () => {
                     </h1>
                 )}
 
-                <div className="w-full max-w-5xl bg-white dark:bg-gray-800 rounded-2xl shadow-md overflow-hidden flex h-[80vh]">
-                    {/* <AssistantRuntimeProvider runtime={runtime}>
+                <div className="w-full max-w-7xl bg-white dark:bg-gray-800 rounded-2xl shadow-md overflow-hidden flex h-[80vh]">
+                    <AssistantRuntimeProvider runtime={runtime}>
                         <div className="grid grid-cols-[250px_1fr] gap-4 p-6 flex-1 h-full">
                             <ThreadList />
                             <Thread />
                         </div>
-                    </AssistantRuntimeProvider> */}
-                    <div className="flex-1 flex items-center justify-center">
-                        <p className="text-gray-500 dark:text-gray-400">
-                            Chat functionality is under development. Stay tuned!
-                        </p>
-                    </div>
+                    </AssistantRuntimeProvider>
                 </div>
             </div>
         </>
