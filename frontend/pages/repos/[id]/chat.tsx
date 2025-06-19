@@ -19,7 +19,7 @@ const ChatPage: NextPage = () => {
     const [repo, setRepo] = useState<Repo | null>(null);
 
     const runtime = useChatRuntime({
-        api: "/api/chat",
+        api: `/api/chat?repoId=${id}`,
     });
 
     useEffect(() => {

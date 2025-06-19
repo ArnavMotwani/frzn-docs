@@ -21,6 +21,7 @@ export default async function handler(
         return res.status(405).end(`Method ${req.method} Not Allowed`);
     }
 
+    const { repoId } = req.query;
     const rawBody: string = await new Promise((resolve, reject) => {
         let data = "";
         req.on("data", (chunk) => (data += chunk));
@@ -30,7 +31,7 @@ export default async function handler(
 
     let backendRes: Response;
     try {
-        backendRes = await fetch(`${BACKEND_URL}/api/chat`, {
+        backendRes = await fetch(`${BACKEND_URL}/api/chat?repoId=${repoId}`, {
             method:  "POST",
             headers: { "Content-Type": "application/json" },
             body:    rawBody,
