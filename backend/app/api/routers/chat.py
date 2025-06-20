@@ -12,9 +12,12 @@ async def chat(
     repoId: str,
     request: Request,
 ):
-    body = await request.json()
-
-    state = body
+    payload = await request.json()
+    messages = payload.get("messages", [])
+    state = {
+        "repo_id": repoId,
+        "messages": messages,
+    }
 
     def data_stream():
         for token, _ in graph.stream(state, stream_mode="messages"):
