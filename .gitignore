@@ -37,6 +37,7 @@ db-data/
 # Env files
 .env
 .env.*
+!.env.example
 
 # Package lock files
 frontend/package-lock.json
