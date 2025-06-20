@@ -1,6 +1,6 @@
 # frzn-docs
 
-**frzn-docs** is an AI-powered documentation assistant that turns any public GitHub repository into a conversational knowledge base. Clone, index and embed your code, then ask natural-language questions and get context-aware answers—powered by a LangGraph agent and OpenAI’s embeddings & chat models.
+**frzn-docs** is an AI-powered documentation assistant that turns any public GitHub repository into a conversational knowledge base. Clone, index and embed your code, then ask natural-language questions and get context-aware answers powered by a LangGraph agent and OpenAI’s embeddings & chat models.
 
 ## What it does
 
