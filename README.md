@@ -20,7 +20,13 @@
    - Pipes messages + retrieved code into GPT-4 as a system prompt  
    - Streams back LLM responses in real time
 
-4. **Full-stack chat UI**  
+4. **Advanced multi-stage research pipeline**  
+   - **Repo summary**: Automatically generates a concise 2–3 paragraph overview of your entire codebase  
+   - **Context fetch**: Retrieves and ranks the top-3 most relevant code snippets for any query  
+   - **Focused research loops**: Runs three parallel expert “mini-agents” (logic-level, file-level, architecture-level) that iteratively refine their insights until they converge  
+   - **Final aggregation**: Combines summary, metadata, and each loop’s findings into one coherent, context-rich answer
+
+5. **Full-stack chat UI**  
    - **Backend:** FastAPI + SQLModel + Alembic migrations, background indexing  
    - **Frontend:** Next.js + Tailwind + [assistant-ui](https://www.assistant-ui.com/) primitives for a polished, accessible chat experience  
    - **Dockerized:** Launch Postgres, backend and frontend with one command
