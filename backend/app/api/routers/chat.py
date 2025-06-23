@@ -20,7 +20,10 @@ async def chat(
     }
 
     def data_stream():
-        for token, _ in graph.stream(state, stream_mode="messages"):
+        for token, metadata in graph.stream(state, stream_mode="messages"):
+            if metadata.get("langgraph_node") != "aggregate":
+                continue
+
             text = getattr(token, "content", "") or ""
             if not text:
                 continue
