@@ -87,17 +87,10 @@ const ChatPage: NextPage = () => {
                 }}
             />
 
-            <div className="flex flex-col min-h-screen
-                            bg-gradient-to-b from-gray-50 to-white
-                            dark:from-gray-900 dark:to-gray-800">
-                <div className="flex justify-center px-6 pt-6">
+            <div className="flex flex-col h-screen bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
+                <div className="flex justify-center px-6 pt-6 flex-shrink-0">
                     <div className="w-full max-w-screen-3xl">
-                        <Card className="
-                            gap-0 py-0
-                            bg-gradient-to-r from-blue-500 to-purple-600
-                            text-white shadow-xl
-                            mb-6
-                        ">
+                        <Card className="gap-0 py-0 bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-xl mb-6">
                             <CardHeader className="px-6 py-2 flex items-center justify-between">
                                 <CardTitle className="text-2xl leading-tight">
                                     {repo ? `${repo.owner}/${repo.name}` : 'Loading...'}
@@ -116,15 +109,16 @@ const ChatPage: NextPage = () => {
                     </div>
                 </div>
 
-                <main className="flex-1 flex justify-center px-6 pb-6">
+                <main className="flex justify-center px-6 pb-6 flex-1 min-h-0">
                     <div className="
-                        w-full max-w-screen-3xl flex flex-1
+                        w-full max-w-screen-3xl flex flex-1 min-h-0
                         bg-white/90 dark:bg-gray-800/90
                         backdrop-blur-sm
                         rounded-2xl
                         shadow-2xl
                         ring-1 ring-gray-200 dark:ring-gray-700
                         overflow-hidden
+                        h-full max-h-full
                     ">
                         <AssistantRuntimeProvider runtime={runtime}>
                             <aside className="
@@ -136,8 +130,8 @@ const ChatPage: NextPage = () => {
                                 <ThreadList />
                             </aside>
 
-                            <section className="flex-1 flex flex-col">
-                                <div className="flex-1 overflow-auto p-6">
+                            <section className="flex-1 flex flex-col min-h-0">
+                                <div className="flex-1 overflow-auto p-6 min-h-0">
                                     <Thread />
                                 </div>
                             </section>
