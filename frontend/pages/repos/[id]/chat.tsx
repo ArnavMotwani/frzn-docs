@@ -10,6 +10,12 @@ import { useChatRuntime } from '@assistant-ui/react-ai-sdk';
 import { Thread } from '@/components/assistant-ui/thread';
 import { ThreadList } from '@/components/assistant-ui/thread-list';
 import { Repo } from '@/pages/index';
+import {
+    Card,
+    CardHeader,
+    CardTitle,
+    CardAction,
+} from '@/components/ui/card';
 
 const ChatPage: NextPage = () => {
     const router = useRouter();
@@ -23,8 +29,7 @@ const ChatPage: NextPage = () => {
     });
 
     useEffect(() => {
-        if (!isReady) return;
-        if (hasFetched.current) return;
+        if (!isReady || hasFetched.current) return;
         hasFetched.current = true;
 
         if (Array.isArray(id) || isNaN(Number(id))) {
@@ -33,34 +38,35 @@ const ChatPage: NextPage = () => {
             return;
         }
 
-        const repoId = Number(id);
         (async () => {
             try {
-                const res = await fetch(`/api/repos/${repoId}`);
+                const res = await fetch(`/api/repos/${Number(id)}`);
                 if (!res.ok) {
                     const text = await res.text();
                     throw new Error(text || 'Failed to fetch repo details');
                 }
 
                 const data: Repo = await res.json();
-
-                if (data.index_status === 'complete') {
-                    setRepo(data);
-                } else if (data.index_status === 'error') {
-                    toast.error(
-                        `Error indexing repo ${data.owner}/${data.name}: ${data.index_status}`,
-                        { duration: 4000 }
-                    );
-                    router.replace('/');
-                } else if (data.index_status === 'pending' || data.index_status === 'indexing') {
-                    toast(
-                        `Repo ${data.owner}/${data.name} is still being indexed, status: ${data.index_status}`,
-                        { duration: 4000 }
-                    );
-                    router.replace('/');
+                switch (data.index_status) {
+                    case 'complete':
+                        setRepo(data);
+                        break;
+                    case 'error':
+                        toast.error(
+                            `Error indexing ${data.owner}/${data.name}, status: ${data.index_status}`,
+                            { duration: 4000 }
+                        );
+                        router.replace('/');
+                        break;
+                    default:
+                        toast(
+                            `${data.owner}/${data.name} is ${data.index_status}, please try again shortly.`,
+                            { duration: 4000 }
+                        );
+                        router.replace('/');
                 }
-            } catch (error) {
-                console.error('Error fetching repo details:', error);
+            } catch (err) {
+                console.error('Fetch repo error:', err);
             }
         })();
     }, [isReady, id, router]);
@@ -81,29 +87,63 @@ const ChatPage: NextPage = () => {
                 }}
             />
 
-            <div className="relative flex flex-col items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
-                <button
-                    aria-label="Close chat"
-                    onClick={() => router.push('/')}
-                    className="absolute top-6 right-6 p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"
-                >
-                    <X className="w-6 h-6 text-gray-600 dark:text-gray-300" />
-                </button>
-
-                {repo && (
-                    <h1 className="text-2xl font-bold mb-6 text-gray-800 dark:text-gray-100">
-                        {repo.owner}/{repo.name}
-                    </h1>
-                )}
-
-                <div className="w-full max-w-7xl bg-white dark:bg-gray-800 rounded-2xl shadow-md overflow-hidden flex h-[80vh]">
-                    <AssistantRuntimeProvider runtime={runtime}>
-                        <div className="grid grid-cols-[250px_1fr] gap-4 p-6 flex-1 h-full">
-                            <ThreadList />
-                            <Thread />
-                        </div>
-                    </AssistantRuntimeProvider>
+            <div className="flex flex-col min-h-screen
+                            bg-gradient-to-b from-gray-50 to-white
+                            dark:from-gray-900 dark:to-gray-800">
+                <div className="flex justify-center px-6 pt-6">
+                    <div className="w-full max-w-screen-3xl">
+                        <Card className="
+                            gap-0 py-0
+                            bg-gradient-to-r from-blue-500 to-purple-600
+                            text-white shadow-xl
+                            mb-6
+                        ">
+                            <CardHeader className="px-6 py-2 flex items-center justify-between">
+                                <CardTitle className="text-2xl leading-tight">
+                                    {repo ? `${repo.owner}/${repo.name}` : 'Loading...'}
+                                </CardTitle>
+                                <CardAction>
+                                    <button
+                                        aria-label="Close chat"
+                                        onClick={() => router.push('/')}
+                                        className="p-2 rounded-full hover:bg-white/20 transition"
+                                    >
+                                        <X className="w-6 h-6 text-white" />
+                                    </button>
+                                </CardAction>
+                            </CardHeader>
+                        </Card>
+                    </div>
                 </div>
+
+                <main className="flex-1 flex justify-center px-6 pb-6">
+                    <div className="
+                        w-full max-w-screen-3xl flex flex-1
+                        bg-white/90 dark:bg-gray-800/90
+                        backdrop-blur-sm
+                        rounded-2xl
+                        shadow-2xl
+                        ring-1 ring-gray-200 dark:ring-gray-700
+                        overflow-hidden
+                    ">
+                        <AssistantRuntimeProvider runtime={runtime}>
+                            <aside className="
+                                hidden md:block w-64
+                                bg-gray-100 dark:bg-gray-700
+                                p-6
+                                overflow-auto
+                            ">
+                                <ThreadList />
+                            </aside>
+
+                            <section className="flex-1 flex flex-col">
+                                <div className="flex-1 overflow-auto p-6">
+                                    <Thread />
+                                </div>
+                            </section>
+                        </AssistantRuntimeProvider>
+                    </div>
+                </main>
             </div>
         </>
     );
